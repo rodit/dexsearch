@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="clientlib:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/clientlib_jar</output-path>
+    <root id="archive" name="clientlib.jar">
+      <element id="module-output" name="clientlib" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/clientlib/libs/gson-2.8.7.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

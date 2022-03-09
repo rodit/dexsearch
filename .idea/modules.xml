@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/clientlib/clientlib.iml" filepath="$PROJECT_DIR$/clientlib/clientlib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dexsearch.iml" filepath="$PROJECT_DIR$/dexsearch.iml" />
+    </modules>
+  </component>
+</project>
