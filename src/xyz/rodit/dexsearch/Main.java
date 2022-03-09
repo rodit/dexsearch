@@ -29,7 +29,11 @@ import java.util.zip.ZipFile;
 public class Main {
 
     public static void main(String[] args) throws ParseException, IOException {
-        Options options = new Options();
+        Options options = new Options()
+                .addOption("h", "help", false, "Displays help information.");
+
+        CommandLine helpCli =new DefaultParser().parse(options, args);
+
         options.addRequiredOption("i", "input", true, "The input apk file containing DEX binaries.")
                 .addRequiredOption("o", "output", true, "The output file to write the schema mapping metadata.")
                 .addRequiredOption("s", "schema", true, "The schema file.")
@@ -38,8 +42,13 @@ public class Main {
                 .addOption("a", "android", true, "The location of the android stub jar (included in the Android SDK) to see if class names are valid or should be changed to java.lang.Object.")
                 .addOption("b", "base", true, "The fully qualified name of the base class of the generated mapping classes.");
 
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cli = parser.parse(options, args);
+        if (helpCli.hasOption("h")) {
+            HelpFormatter helpFormatter = new HelpFormatter();
+            helpFormatter.printHelp("dexsearch", options);
+            return;
+        }
+
+        CommandLine cli = new DefaultParser().parse(options, args);
 
         File input = new File(cli.getOptionValue("i"));
         File output = new File(cli.getOptionValue("o"));
