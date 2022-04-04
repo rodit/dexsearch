@@ -1,0 +1,63 @@
+#option access_modifiers strict
+
+import java.lang.String;
+import java.util.List;
+
+import android.os.Bundle;
+import android.view.View;
+import android.view.View$OnClickListener;
+
+[certain]
+class MainActivity expects com.ss.android.ugc.aweme.main.MainActivity {
+
+    void $onCreate(Bundle)
+}
+
+[certain]
+class User expects com.ss.android.ugc.aweme.profile.model.User {
+
+    String $nameField;
+    String $nickname;
+    String $searchUserName;
+    String $userDisplayName;
+}
+
+[certain]
+class UrlModel expects com.ss.android.ugc.aweme.base.model.UrlModel {
+
+    List $urlList;
+}
+
+[certain]
+class BitRate expects com.ss.android.ugc.aweme.feed.model.BitRate {
+
+    int $bitRate;
+    !UrlModel $playAddr;
+}
+
+[certain]
+class Video expects com.ss.android.ugc.aweme.feed.model.Video {
+
+    List $bitRate;
+}
+
+[certain]
+class Aweme expects com.ss.android.ugc.aweme.feed.model.Aweme {
+
+    String $aid;
+    !User author;
+    !Video video;
+}
+
+class ShareViewOnClickListener extends #WidgetEventHandler implements View$OnClickListener {
+
+    void $onClick(View) {
+        .string "VIDEO_CANCEL_REPORT_SKIP_BEHAVIOR";
+    }
+}
+
+[late]
+class WidgetEventHandler {
+
+    !Aweme aweme;
+}
