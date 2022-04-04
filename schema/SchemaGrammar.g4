@@ -140,7 +140,7 @@ type: OPEN_TRI EXTENDS type CLOSE_TRI #extendsType
     | VARARGS_ANY #varargsType ;
 
 typeList: type?
-    | type (COMMA type)+ ;
+    | type (COMMA type)* ;
 
 bindEvent: BIND_EVENT_OPERATION BIND_EVENT_TARGET IDENTIFIER BIND_EVENT_MODIFIER BIND_EVENT_SOURCE ;
 
