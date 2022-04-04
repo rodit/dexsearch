@@ -107,7 +107,6 @@ public class DefaultResolver implements Resolver {
 
     private void putBinding(String name, ClassBinding binding) {
         bindings.put(name, binding);
-        dexBindings.put(binding.get().getType(), binding);
     }
 
     @Override
@@ -142,6 +141,11 @@ public class DefaultResolver implements Resolver {
                         System.err.println("Failed to bind " + node.getName() + ".");
                     }
                 });
+
+        for (String name : bindings.keySet()) {
+            ClassBinding binding = bindings.get(name);
+            dexBindings.put(bindings.get(name).get().getType(), binding);
+        }
 
         return bindings;
     }
