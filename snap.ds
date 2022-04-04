@@ -326,7 +326,7 @@ class MediaItem {
 
     String $toString() {
         [conserve]
-        .string contains "MediaItem";
+        .string "MediaItem(id=";
         .string contains "id=", bind field id next reference;
         .string contains "type=", bind field mediaType next reference;
     }
@@ -364,7 +364,7 @@ class ChatModelSavedSnap {
     [discard] Uri u1;
     !LiveSnapMedia media;
 
-    void $<init>(Context, !MessageDataModel, String, Map, boolean, !ChatReactionsBelowMessageViewModel, boolean, int, int, !LiveSnapMedia, String, *, boolean) {
+    void $<init>(Context, !MessageDataModel, String, Map, boolean, !ChatReactionsBelowMessageViewModel, boolean, int, int, !LiveSnapMedia, String, ...) {
         .field !ChatLayouts->!SAVED_SNAP;
         .method TimeUnit->toMillis;
         .method Double->isNaN;
@@ -385,11 +385,19 @@ class MixedServiceProvider {
     }
 }
 
+[certain, discard]
+class SendToSponsorManagerImpl {
+
+    void $<init>(...) {
+        .string "SendToSponsorManagerImpl";
+    }
+}
+
 class ChatModelAudioNote {
 
     [discard] java.lang.String s0;
     [discard] java.lang.String s1;
-    [discard] !MixedServiceProvider msp0;
+    [discard] !SendToSponsorManagerImpl msp0;
     [discard] boolean b0;
 
     void $<init>(Context, !ChatLayouts, !MessageDataModel, *, java.lang.String, java.util.Map, boolean, ...)
@@ -455,9 +463,7 @@ class FriendProfileTransformer {
 
     * $apply(...) {
         .string "pageSessionModel";
-        .string "null cannot be cast to non-null type kotlin.CharSequence";
-        .string "one_of_your_bf";
-        .string "number_one_bf";
+        .string "Required value was null.";
         .string "sectionPerformanceLogger";
         .method Collections->singletonList;
         .field this->!target;
@@ -682,17 +688,40 @@ class SendingPacketBuilder {
     }
 }
 
+class SerializableContent extends #MediaContainer {
+
+    !MediaBaseBase message;
+
+    String $toString() {
+        .string "SerializableContent(message=";
+    }
+}
+
+class MessagePayload {
+
+    [discard] String s0;
+    !MediaContainer media;
+
+    void $dispose()
+}
+
+class SendAndRecycleProcessor {
+
+    void $<init>(...) {
+        .string "SendAndRecycleProcessor";
+    }
+}
+
 class MessageSenderCrossroad {
 
-    [late] Object media;
+    [late] !MessagePayload payload;
 
-    void $<init>(!MediaBaseBase, List, !SendingPacketBuilder, List, ...) {
+    void $<init>(!MessagePayload, !SendAndRecycleProcessor) {
         [strict]
-        .expr this->* = .p0, bind field media current reference;
+        .expr this->* = .p0, bind field payload current reference;
     }
 
     * $apply(*) {
-        .method Collections->singletonList;
     }
 }
 
