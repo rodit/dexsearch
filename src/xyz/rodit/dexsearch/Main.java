@@ -4,6 +4,7 @@ import org.apache.commons.cli.*;
 import org.jf.dexlib2.iface.ClassDef;
 import xyz.rodit.dexsearch.codegen.ClassChecker;
 import xyz.rodit.dexsearch.codegen.CodegenUtils;
+import xyz.rodit.dexsearch.codegen.EmbeddedMappingsGenerator;
 import xyz.rodit.dexsearch.codegen.Packager;
 import xyz.rodit.dexsearch.codegen.android.AndroidStubLoader;
 import xyz.rodit.dexsearch.codegen.xposed.XposedClassGenerator;
@@ -32,17 +33,24 @@ public class Main {
         Options options = new Options()
                 .addOption("h", "help", false, "Displays help information.");
 
-        CommandLine helpCli =new DefaultParser().parse(options, args);
+        CommandLine helpCli = null;
+
+        try {
+            helpCli = new DefaultParser().parse(options, args);
+        } catch (ParseException e) {
+            // ignore unrecognised options
+        }
 
         options.addRequiredOption("i", "input", true, "The input apk file containing DEX binaries.")
                 .addRequiredOption("o", "output", true, "The output file to write the schema mapping metadata.")
                 .addRequiredOption("s", "schema", true, "The schema file.")
                 .addOption("j", "jar", true, "The destination for the jar containing generated classes for the mappings.")
+                .addOption("e", "embed", false, "Embed the mappings into the generated jar file. Call EmbeddedMappings#load(ClassLoader) to load them.")
                 .addOption("p", "package", true, "The name of the package the generated classes should be generated under.")
                 .addOption("a", "android", true, "The location of the android stub jar (included in the Android SDK) to see if class names are valid or should be changed to java.lang.Object.")
                 .addOption("b", "base", true, "The fully qualified name of the base class of the generated mapping classes.");
 
-        if (helpCli.hasOption("h")) {
+        if (helpCli != null && helpCli.hasOption("h")) {
             HelpFormatter helpFormatter = new HelpFormatter();
             helpFormatter.printHelp("dexsearch", options);
             return;
@@ -57,6 +65,7 @@ public class Main {
         String packageName = cli.getOptionValue("p");
         File androidJar = cli.hasOption("a") ? new File(cli.getOptionValue("a")) : null;
         String baseClass = cli.getOptionValue("b", "xyz.rodit.dexsearch.client.xposed.MappedObject");
+        boolean embedMappings = cli.hasOption("e");
 
         if (!input.exists()) {
             System.err.println("Input file not found: " + input);
@@ -130,6 +139,16 @@ public class Main {
                 }
 
                 compilationFiles.add(outputFile);
+            }
+
+            if (embedMappings) {
+                File embeddedMappingsFile = new File(srcDir, "EmbeddedMappings.java");
+                String generated = EmbeddedMappingsGenerator.generateClass(packageName, output);
+                try (PrintWriter out = new PrintWriter(embeddedMappingsFile)) {
+                    out.print(generated);
+                }
+
+                compilationFiles.add(embeddedMappingsFile);
             }
 
             if (Packager.compile(compilationFiles, binDir, classPaths)) {
