@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+}
+
+group 'xyz.rodit'
+version '1.0'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    implementation 'de.robv.android.xposed:api:82'
+    implementation 'commons-cli:commons-cli:1.5.0'
+    implementation 'com.google.code.gson:gson:2.8.7'
+    implementation 'com.google.guava:guava:27.1-android'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':clientlib')
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    manifest {
+        attributes 'Main-Class': 'xyz.rodit.dexsearch.Main'
+    }
+
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+task antlr {
+    exec {
+        executable 'java'
+        args '-jar', 'libs/antlr-4.9.2-complete.jar', 'schema/SchemaGrammar.g4', '-o', 'src/main/java/xyz/rodit/dexsearch/antlr', '-package', 'xyz.rodit.dexsearch.antlr', '-no-listener', '-visitor', '-Werror'
+    }
+}
