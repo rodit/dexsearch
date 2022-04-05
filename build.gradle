@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'xyz.rodit'
-version '1.0'
+version 'latest'
 
 repositories {
     mavenCentral()
