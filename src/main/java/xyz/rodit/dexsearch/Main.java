@@ -15,6 +15,7 @@ import xyz.rodit.dexsearch.resolver.Resolver;
 import xyz.rodit.dexsearch.tree.attributes.Attribute;
 import xyz.rodit.dexsearch.tree.bindings.ClassBinding;
 import xyz.rodit.dexsearch.tree.nodes.SchemaNode;
+import xyz.rodit.dexsearch.utils.FileUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -101,11 +102,12 @@ public class Main {
         Resolver resolver = new DefaultResolver(schemaNode.getOptions(), dex, schemaNode.getClasses());
         Map<String, ClassBinding> bindings = resolver.resolveAll();
 
-        output.getParentFile().mkdirs();
+
+        FileUtils.createParentDir(output);
         Packager.createMappingsFile(bindings, 0, output);
 
         if (jar != null) {
-            jar.getParentFile().mkdirs();
+            FileUtils.createParentDir(jar);
             File tmpDir = Files.createTempDirectory("dexsearch").toFile();
             File srcDir = new File(tmpDir, "src");
             File binDir = new File(tmpDir, "bin");
