@@ -1,9 +1,7 @@
 package xyz.rodit.dexsearch;
 
 import org.apache.commons.cli.*;
-import org.jf.dexlib2.iface.ClassDef;
 import xyz.rodit.dexsearch.codegen.ClassChecker;
-import xyz.rodit.dexsearch.codegen.CodegenUtils;
 import xyz.rodit.dexsearch.codegen.EmbeddedMappingsGenerator;
 import xyz.rodit.dexsearch.codegen.Packager;
 import xyz.rodit.dexsearch.codegen.android.AndroidStubLoader;
@@ -17,7 +15,9 @@ import xyz.rodit.dexsearch.tree.bindings.ClassBinding;
 import xyz.rodit.dexsearch.tree.nodes.SchemaNode;
 import xyz.rodit.dexsearch.utils.FileUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;

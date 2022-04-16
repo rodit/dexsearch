@@ -90,7 +90,9 @@ public class XposedClassGenerator implements ClassGenerator {
                     .append(binding.getNode().getName())
                     .append(" valueOf(String name){return ")
                     .append(binding.getNode().getName())
-                    .append(".wrap(callStatic(\"valueOf\", name));}");
+                    .append(".wrap(callStatic(\"")
+                    .append(binding.getNode().getName())
+                    .append("\",\"valueOf\", name));}");
         }
 
         binding.getBoundMethods().stream()
@@ -159,8 +161,8 @@ public class XposedClassGenerator implements ClassGenerator {
                     .append("})");
         } else {
             StringBuilder bodySource = new StringBuilder().append("call")
-                    .append(isStatic ? "Static" : "")
-                    .append("(\"")
+                    .append(isStatic ? "Static(\"" + binding.getNode().getName() + "\"," : "(")
+                    .append('"')
                     .append(methodNode.getName())
                     .append("\"");
 
