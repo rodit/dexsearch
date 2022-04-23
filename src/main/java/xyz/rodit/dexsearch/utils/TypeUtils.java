@@ -20,7 +20,9 @@ public class TypeUtils {
     }
 
     public static String toJavaType(String dexName) {
-        if (dexName.endsWith(";")) {
+        if (dexName.startsWith("[")) {
+            return toJavaType(dexName.substring(1)) + "[]";
+        } else if (dexName.endsWith(";")) {
             return dexName.substring(1, dexName.length() - 1).replace("/", ".");
         } else if (primDexToJava.containsKey(dexName)) {
             return primDexToJava.get(dexName);
