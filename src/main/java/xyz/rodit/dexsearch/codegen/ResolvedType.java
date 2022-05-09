@@ -49,7 +49,7 @@ public class ResolvedType {
 
         String javaName = TypeUtils.toJavaType(name);
         if (PRIMITIVES.contains(javaName) || checker.get(javaName) != null) {
-            return new ResolvedType(javaName, false);
+            return new ResolvedType(javaName.replace('$', '.'), false);
         }
 
         return new ResolvedType("Object", false);
