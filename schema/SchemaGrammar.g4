@@ -80,6 +80,7 @@ BYTECODE_EXPRESSION: '.expr' ;
 BYTECODE_REGISTER_PREFIX: '.r' ;
 BYTECODE_PARAM_PREFIX: '.p' ;
 BYTECODE_NEW_INSTANCE: '.new' ;
+BYTECODE_CONSTANT: '.const' ;
 
 COMMA: ',' ;
 OPEN_SQUARE: '[' ;
@@ -160,12 +161,14 @@ methodBodyMethodReference: BYTECODE_METHOD_REFERENCE bytecodeMemberReference ;
 methodBodyFieldReference: BYTECODE_FIELD_REFERENCE bytecodeMemberReference ;
 methodBodyNewInstance: BYTECODE_NEW_INSTANCE type ;
 methodBodyExpression: BYTECODE_EXPRESSION bytecodeExpression ;
+methodBodyConstant: BYTECODE_CONSTANT INT_LIT ;
 methodBodyMatcher: definitionPrefix (methodBodyString
     | methodBodyTypeReference
     | methodBodyMethodReference
     | methodBodyFieldReference
     | methodBodyNewInstance
     | methodBodyExpression
+    | methodBodyConstant
     ) (COMMA bindEvent)* SEMICOLON ;
 
 methodBody: OPEN_BRACE methodBodyMatcher* CLOSE_BRACE ;

@@ -14,16 +14,16 @@ import xyz.rodit.dexsearch.tree.nodes.ClassNode;
 import xyz.rodit.dexsearch.tree.nodes.FieldNode;
 import xyz.rodit.dexsearch.tree.nodes.MethodNode;
 import xyz.rodit.dexsearch.tree.nodes.SchemaNode;
-import xyz.rodit.dexsearch.tree.nodes.bytecode.*;
+import xyz.rodit.dexsearch.tree.nodes.bytecode.BodyNode;
 import xyz.rodit.dexsearch.tree.nodes.bytecode.events.*;
 import xyz.rodit.dexsearch.tree.nodes.bytecode.matchers.*;
 import xyz.rodit.dexsearch.tree.nodes.bytecode.matchers.expressions.SetFieldToInt16;
 import xyz.rodit.dexsearch.tree.nodes.bytecode.matchers.expressions.SetFieldToRegister;
 import xyz.rodit.dexsearch.tree.nodes.bytecode.matchers.expressions.SetFieldToString;
 import xyz.rodit.dexsearch.tree.properties.Annotation;
+import xyz.rodit.dexsearch.tree.properties.Name;
 import xyz.rodit.dexsearch.tree.properties.names.AnyName;
 import xyz.rodit.dexsearch.tree.properties.names.BytecodeMemberName;
-import xyz.rodit.dexsearch.tree.properties.Name;
 import xyz.rodit.dexsearch.tree.properties.names.ExactName;
 import xyz.rodit.dexsearch.tree.properties.names.ReferenceName;
 import xyz.rodit.dexsearch.tree.properties.types.*;
@@ -254,6 +254,11 @@ public class SchemaVisitor extends SchemaGrammarBaseVisitor<Object> {
     @Override
     public BytecodeMemberName visitAnyMemberName(SchemaGrammarParser.AnyMemberNameContext ctx) {
         return new AnyName();
+    }
+
+    @Override
+    public ConstantMatcher visitMethodBodyConstant(SchemaGrammarParser.MethodBodyConstantContext ctx) {
+        return new ConstantMatcher(Long.parseLong(ctx.INT_LIT().getText()));
     }
 
     @Override
