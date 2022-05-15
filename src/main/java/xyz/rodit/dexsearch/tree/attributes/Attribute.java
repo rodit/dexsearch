@@ -15,6 +15,7 @@ public enum Attribute {
     NOT(EnumSet.of(Target.FIELD, Target.METHOD)),
     CONSERVE(EnumSet.of(Target.INSTRUCTION)),
     STRICT(EnumSet.of(Target.INSTRUCTION)),
+    OBFUSCATED(EnumSet.of(Target.CLASS, Target.FIELD, Target.METHOD)),
     // TODO: add support for markers in the future
     MARKER(EnumSet.noneOf(Target.class));
 

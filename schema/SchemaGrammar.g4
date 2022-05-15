@@ -69,6 +69,8 @@ BIND_EVENT_MODIFIER: 'previous'
     | 'next' ;
 BIND_EVENT_SOURCE: 'reference' ;
 
+AUTO_FIELDS: '.fields' ;
+
 BYTECODE_STRING: '.string' ;
 BYTECODE_STRING_REGEX: 'regex' ;
 BYTECODE_STRING_CONTAINS: 'contains' ;
@@ -127,6 +129,11 @@ definitionPrefix: schemaAttributes? annotation* ACCESS_FLAG* ;
 
 name: DOLLAR? IDENTIFIER ;
 
+autoField: definitionPrefix type? name ;
+autoFieldList: autoField
+    | autoField (COMMA autoField)* ;
+
+autoFieldsDefinition: definitionPrefix type AUTO_FIELDS OPEN_BRACE autoFieldList CLOSE_BRACE ;
 fieldDefinition: definitionPrefix type name SEMICOLON ;
 
 type: OPEN_TRI EXTENDS type CLOSE_TRI #extendsType
@@ -178,7 +185,7 @@ expectsStatement: EXPECTS javaTypeName ;
 extendsStatement: EXTENDS type ;
 implementsStatement: IMPLEMENTS type (COMMA type)* ;
 
-classDefinition: definitionPrefix CLASS_TYPE name expectsStatement? extendsStatement? implementsStatement? OPEN_BRACE fieldDefinition* methodDefinition* CLOSE_BRACE ;
+classDefinition: definitionPrefix CLASS_TYPE name expectsStatement? extendsStatement? implementsStatement? OPEN_BRACE autoFieldsDefinition? fieldDefinition* methodDefinition* CLOSE_BRACE ;
 
 importStatement: IMPORT JAVA_TYPE_IDENTIFIER SEMICOLON ;
 

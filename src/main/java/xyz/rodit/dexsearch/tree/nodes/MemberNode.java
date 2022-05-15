@@ -32,6 +32,10 @@ public abstract class MemberNode<TMember extends Member> extends NodeBase<ClassB
         this.annotations = new ArrayList<>(annotations);
     }
 
+    public int getAccessModifiers() {
+        return accessModifiers;
+    }
+
     public String getName() {
         return name.getName();
     }

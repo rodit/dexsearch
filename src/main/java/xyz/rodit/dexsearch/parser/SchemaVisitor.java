@@ -89,7 +89,7 @@ public class SchemaVisitor extends SchemaGrammarBaseVisitor<Object> {
     public Annotation visitAnnotation(SchemaGrammarParser.AnnotationContext ctx) {
         Object visitedType = super.visit(ctx.type());
         if (visitedType instanceof Type annotationType) {
-            return new Annotation(annotationType, ctx.annotationArguments().constant().stream().map(super::visit).collect(Collectors.toList()));
+            return new Annotation(annotationType, ctx.annotationArguments().constant().stream().map(super::visit).toList());
         }
 
         return null;
@@ -98,7 +98,7 @@ public class SchemaVisitor extends SchemaGrammarBaseVisitor<Object> {
     @Override
     public ClassNode visitClassDefinition(SchemaGrammarParser.ClassDefinitionContext ctx) {
         EnumSet<Attribute> attributes = visitSchemaAttributes(ctx.definitionPrefix().schemaAttributes(), Target.CLASS);
-        int accessModifiers = AccessUtils.getModifiers(ctx.definitionPrefix().ACCESS_FLAG().stream().map(ParseTree::getText).collect(Collectors.toList()))
+        int accessModifiers = AccessUtils.getModifiers(ctx.definitionPrefix().ACCESS_FLAG().stream().map(ParseTree::getText).toList())
                 | AccessUtils.getModifierValue(ctx.CLASS_TYPE().getText());
         Name name = visitName(ctx.name());
         String expected = ctx.expectsStatement() != null
@@ -111,15 +111,36 @@ public class SchemaVisitor extends SchemaGrammarBaseVisitor<Object> {
                 ? ctx.implementsStatement().type().stream().map(this::visitType).toList()
                 : List.of();
         List<Annotation> annotations = ctx.definitionPrefix().annotation().stream().map(this::visitAnnotation).toList();
-        List<FieldNode> fields = ctx.fieldDefinition().stream().map(this::visitFieldDefinition).toList();
+        List<FieldNode> fields = new ArrayList<>();
+        if (ctx.autoFieldsDefinition() != null) {
+            fields.addAll(visitAutoFieldsDefinition(ctx.autoFieldsDefinition()));
+        }
+        fields.addAll(ctx.fieldDefinition().stream().map(this::visitFieldDefinition).toList());
         List<MethodNode> methods = ctx.methodDefinition().stream().map(this::visitMethodDefinition).toList();
         return new ClassNode(attributes, accessModifiers, name, expected, annotations, extendsType, interfaceTypes, fields, methods);
     }
 
     @Override
+    public List<FieldNode> visitAutoFieldsDefinition(SchemaGrammarParser.AutoFieldsDefinitionContext ctx) {
+        EnumSet<Attribute> attributes = visitSchemaAttributes(ctx.definitionPrefix().schemaAttributes(), Target.FIELD);
+        int accessModifiers = AccessUtils.getModifiers(ctx.definitionPrefix().ACCESS_FLAG().stream().map(ParseTree::getText).toList());
+        Type type = visitType(ctx.type());
+        List<Annotation> annotations = ctx.definitionPrefix().annotation().stream().map(this::visitAnnotation).toList();
+        return ctx.autoFieldList().autoField().stream().map(f -> {
+            EnumSet<Attribute> fieldAttributes = visitSchemaAttributes(f.definitionPrefix().schemaAttributes(), Target.FIELD);
+            fieldAttributes.addAll(attributes);
+            int fieldAccessModifiers = AccessUtils.getModifiers(f.definitionPrefix().ACCESS_FLAG().stream().map(ParseTree::getText).toList()) | accessModifiers;
+            List<Annotation> fieldAnnotations = new ArrayList<>(annotations);
+            fieldAnnotations.addAll(f.definitionPrefix().annotation().stream().map(this::visitAnnotation).toList());
+            Type fieldType = f.type() != null ? visitType(f.type()) : type;
+            return new FieldNode(fieldAttributes, fieldAccessModifiers, fieldType, visitName(f.name()), fieldAnnotations);
+        }).toList();
+    }
+
+    @Override
     public FieldNode visitFieldDefinition(SchemaGrammarParser.FieldDefinitionContext ctx) {
         EnumSet<Attribute> attributes = visitSchemaAttributes(ctx.definitionPrefix().schemaAttributes(), Target.FIELD);
-        int accessModifiers = AccessUtils.getModifiers(ctx.definitionPrefix().ACCESS_FLAG().stream().map(ParseTree::getText).collect(Collectors.toList()));
+        int accessModifiers = AccessUtils.getModifiers(ctx.definitionPrefix().ACCESS_FLAG().stream().map(ParseTree::getText).toList());
         Type type = visitType(ctx.type());
         Name name = visitName(ctx.name());
         List<Annotation> annotations = ctx.definitionPrefix().annotation().stream().map(this::visitAnnotation).toList();
@@ -129,7 +150,7 @@ public class SchemaVisitor extends SchemaGrammarBaseVisitor<Object> {
     @Override
     public MethodNode visitMethodDefinition(SchemaGrammarParser.MethodDefinitionContext ctx) {
         EnumSet<Attribute> attributes = visitSchemaAttributes(ctx.definitionPrefix().schemaAttributes(), Target.METHOD);
-        int accessModifiers = AccessUtils.getModifiers(ctx.definitionPrefix().ACCESS_FLAG().stream().map(ParseTree::getText).collect(Collectors.toList()));
+        int accessModifiers = AccessUtils.getModifiers(ctx.definitionPrefix().ACCESS_FLAG().stream().map(ParseTree::getText).toList());
         Type type = visitType(ctx.type());
         Name name = visitName(ctx.name());
         List<Annotation> annotations = ctx.definitionPrefix().annotation().stream().map(this::visitAnnotation).toList();

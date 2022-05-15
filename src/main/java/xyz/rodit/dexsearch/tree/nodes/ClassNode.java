@@ -1,5 +1,6 @@
 package xyz.rodit.dexsearch.tree.nodes;
 
+import org.jf.dexlib2.AccessFlags;
 import org.jf.dexlib2.iface.ClassDef;
 import org.jf.dexlib2.iface.Field;
 import org.jf.dexlib2.iface.Member;
@@ -12,10 +13,14 @@ import xyz.rodit.dexsearch.tree.bindings.ClassBinding;
 import xyz.rodit.dexsearch.tree.bindings.Reason;
 import xyz.rodit.dexsearch.tree.bindings.options.AccessModifiers;
 import xyz.rodit.dexsearch.tree.bindings.options.Option;
+import xyz.rodit.dexsearch.tree.nodes.bytecode.BodyNode;
+import xyz.rodit.dexsearch.tree.nodes.bytecode.events.*;
+import xyz.rodit.dexsearch.tree.nodes.bytecode.matchers.StringMatcher;
 import xyz.rodit.dexsearch.tree.properties.Annotation;
 import xyz.rodit.dexsearch.tree.properties.Name;
 import xyz.rodit.dexsearch.tree.properties.types.ExtendsType;
 import xyz.rodit.dexsearch.tree.properties.types.ImplementsType;
+import xyz.rodit.dexsearch.tree.properties.types.JavaType;
 import xyz.rodit.dexsearch.tree.properties.types.Type;
 import xyz.rodit.dexsearch.utils.CollectionUtils;
 
@@ -50,6 +55,8 @@ public class ClassNode extends NodeBase<ClassBinding, ClassDef, Object> {
         CollectionUtils.separate(methods, this.notMethods, this.methods, m -> m.hasAttribute(Attribute.NOT));
         lateFieldMap = this.fields.stream().filter(f -> f.hasAttribute(Attribute.LATE)).collect(Collectors.toMap(MemberNode::getName, f -> f));
         lateMethodMap = this.methods.stream().filter(m -> m.hasAttribute(Attribute.LATE)).collect(Collectors.toMap(MemberNode::getName, m -> m));
+
+        processAttributes();
     }
 
     public String getName() {
@@ -117,6 +124,29 @@ public class ClassNode extends NodeBase<ClassBinding, ClassDef, Object> {
                 binding.bindMember(member, available.get(index));
                 binding.succeed(reason, member);
                 available.remove(index);
+            }
+        }
+    }
+
+    private void processAttributes() {
+        if (hasAttribute(Attribute.OBFUSCATED)) {
+            if (AccessUtils.hasModifiers(accessModifiers, AccessFlags.ENUM.getValue())) {
+                methods.add(new MethodNode(
+                        EnumSet.of(Attribute.DISCARD),
+                        AccessFlags.STATIC.getValue(),
+                        new JavaType("void"),
+                        new Name("<clinit>", true),
+                        Collections.emptySet(),
+                        Collections.emptySet(),
+                        fields.stream()
+                                .filter(f ->
+                                        AccessUtils.hasModifiers(f.getAccessModifiers(), AccessFlags.STATIC.getValue())
+                                                && f.hasAttribute(Attribute.LATE))
+                                .map(f -> new BodyNode(
+                                        EnumSet.of(Attribute.STRICT),
+                                        new StringMatcher(f.getName(), false, false),
+                                        Collections.singleton(new BindEvent(Operation.BIND, EventTarget.FIELD, f.getName(), Modifiers.get("next"), EventSource.REFERENCE))
+                                )).toList()));
             }
         }
     }
