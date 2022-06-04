@@ -13,7 +13,7 @@ public enum Attribute {
     DISCARD(EnumSet.of(Target.CLASS, Target.FIELD, Target.METHOD)),
     OPTIONAL(EnumSet.of(Target.FIELD, Target.METHOD)),
     NOT(EnumSet.of(Target.FIELD, Target.METHOD)),
-    CONSERVE(EnumSet.of(Target.INSTRUCTION)),
+    CONSERVE(EnumSet.of(Target.CLASS, Target.INSTRUCTION)),
     STRICT(EnumSet.of(Target.INSTRUCTION)),
     OBFUSCATED(EnumSet.of(Target.CLASS, Target.FIELD, Target.METHOD)),
     // TODO: add support for markers in the future

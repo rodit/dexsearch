@@ -121,7 +121,9 @@ public class DefaultResolver implements Resolver {
                         if (candidate != null) {
                             if (resolve(node, List.of(candidate))) {
                                 System.out.println("Bound " + node.getName() + " to expected class " + node.getExpected() + ".");
-                                available.remove(candidate);
+                                if (!node.hasAttribute(Attribute.CONSERVE)) {
+                                    available.remove(candidate);
+                                }
                                 return;
                             } else {
                                 System.err.println("Failed to bind " + node.getName() + " to expected class.");
@@ -135,7 +137,9 @@ public class DefaultResolver implements Resolver {
                     }
                     if (resolve(node, available)) {
                         ClassBinding binding = bindings.get(node.getName());
-                        available.remove(binding.get());
+                        if (!node.hasAttribute(Attribute.CONSERVE)) {
+                            available.remove(binding.get());
+                        }
                         System.out.println("Bound " + node.getName() + " to " + TypeUtils.toJavaType(binding.get().getType()) + " with score " + binding.getScore() + ".");
                     } else {
                         System.err.println("Failed to bind " + node.getName() + ".");
